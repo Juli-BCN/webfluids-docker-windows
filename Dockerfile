@@ -1,22 +1,24 @@
-FROM ubuntu:18.04
+# Full List here:
+# mcr.microsoft.com/windows
+# IoT: docker pull mcr.microsoft.com/windows/iotcore
+# Nano: docker pull mcr.microsoft.com/windows/nanoserver
+# Core: docker pull mcr.microsoft.com/windows/servercore
+
+FROM mcr.microsoft.com/windows/servercore:ltsc2019
 MAINTAINER "Julian Martin" <julian.martin@leaseplan.com>
 
-# Install dependencies
-RUN apt-get update
-RUN apt-get -y install apache2
+# Uses dism.exe to install the IIS role.
+RUN dism.exe /online /enable-feature /all /featurename:iis-webserver /NoRestart
 
-# Install apache and write ServerName
-RUN rm -rf /var/www/*
-ADD src /var/www/html
-RUN echo ServerName ${HOSTNAME} >> /etc/apache2/apache2.conf
+# Install apache and write hello world message
+RUN del c:\inetpub\wwwroot\iisstart.*
+COPY "src" 'C:\inetpub\wwwroot\'
 
-# Configure apache
-RUN echo '. /etc/apache2/envvars' > /root/run_apache.sh
-RUN echo 'mkdir -p /var/run/apache2' >> /root/run_apache.sh
-RUN echo 'mkdir -p /var/lock/apache2' >> /root/run_apache.sh
-RUN echo '/usr/sbin/apache2 -D FOREGROUND' >> /root/run_apache.sh
-RUN chmod 755 /root/run_apache.sh
+# Sets a command or process that will run each time a container is run from the new image.
+CMD [ "cmd" ]
 
-EXPOSE 80
+# Build from powershell as
+# docker build -t webfluids-win .
 
-CMD /root/run_apache.sh
+# Run it as
+# docker run -it -p 80:80 webfluids-win
