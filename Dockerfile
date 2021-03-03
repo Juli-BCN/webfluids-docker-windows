@@ -5,7 +5,7 @@
 # Core: docker pull mcr.microsoft.com/windows/servercore
 
 FROM mcr.microsoft.com/windows/servercore:ltsc2019
-MAINTAINER "Julian Martin" <julian.martin@leaseplan.com>
+LABEL maintainer="JuliBCN <julibcn@gmail.com>"
 
 # Uses dism.exe to install the IIS role.
 RUN dism.exe /online /enable-feature /all /featurename:iis-webserver /NoRestart
